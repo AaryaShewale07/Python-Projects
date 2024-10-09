@@ -1,0 +1,73 @@
+import tkinter as tk
+from tkinter import Tk,ttk
+from tkinter import *
+import requests
+import json
+
+col1= "#FFFFFF" #white
+col2= "#333333" #black
+col3= "#EB5D51" #red
+
+tab=tk.Tk()
+tab.geometry('300x320')
+tab.title("Currency Converter")
+tab.configure(bg=col1)
+tab.resizable(height=FALSE,width=FALSE)
+
+top=Frame(tab,width=300,height=60,bg=col3)
+top.grid(row=0,column=0)
+
+main=Frame(tab,width=300,height=260,bg=col1)
+main.grid(row=1,column=0)
+
+def convert():
+    url = "https://currency-converter18.p.rapidapi.com/api/v1/convert"
+
+    curr1=combo1.get()
+    curr2=combo2.get()
+    amount=value.get()
+
+    querystring = {"from":curr1,"to":curr2,"amount":amount}
+
+    headers = {
+        "x-rapidapi-key": "f310c5cf52msha087e4c809c0518p1d60fbjsn3796d2678b61",
+        "x-rapidapi-host": "currency-converter18.p.rapidapi.com"
+    }
+
+    response = requests.get(url, headers=headers, params=querystring)
+    print(response.json())
+
+    data=json.loads(response.text)
+    converted_amount=data["result"]["convertedAmount"]
+    formatted="{:,.2f}".format(converted_amount)
+    result['text']=formatted
+    print(converted_amount,formatted)
+    
+
+name=Label(text="Currency Converter",font=("Arial 16 bold"),bg=col3,fg=col1)
+name.place(x=47,y=15)
+
+result=Label(main,text=" ",height=2,width=16,font=("Ivy 15 bold"),relief="solid",bg=col1,fg=col2)
+result.place(x=50,y=10)
+
+currency=["CAD","INR","EUR","USD","GBP","PKR"]
+
+from_curr=Label(main,text="From",height=1,width=8,relief=FLAT,font=("Ivy 10 bold"),bg=col1,fg=col2)
+from_curr.place(x=48,y=90)
+combo1=ttk.Combobox(main,width=8,justify=CENTER,font=("Ivy 12 bold"))
+combo1["values"]=(currency)
+combo1.place(x=50,y=115)
+
+to_curr=Label(main,text="To",height=1,width=8,relief=FLAT,font=("Ivy 10 bold"),bg=col1,fg=col2)
+to_curr.place(x=158,y=90)
+currency=["CAD","INR","EUR","USD","GBP","PKR"]
+combo2=ttk.Combobox(main,width=8,justify=CENTER,font=("Ivy 12 bold"))
+combo2["values"]=(currency)
+combo2.place(x=160,y=115)
+
+value=Entry(main,width=22,justify=CENTER,relief=SOLID,font=("Ivy 12 bold"))
+value.place(x=50,y=155)
+
+button=Button(main,text="CONVERT",width=19,height=1,bg=col3,fg=col1,font=("Ivy 12 bold"),command=convert)
+button.place(x=50,y=210)
+tab.mainloop()
